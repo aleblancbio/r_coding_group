@@ -501,12 +501,17 @@ mean(x <- 4:6)           #do not use <-
 x                        #x was changed
 ```
 
-The function `do.call` allows to call a function with a name to be passed as `character` and its arguments as a `list`. This is useful to produce more generic functions when the function name is not known already, or to pass long arguments or arguments that can be of different size. For example
+The function `do.call` allows to call a function with a name to be passed as `character` and its arguments as a `list`. This is useful to produce more generic functions when the function name is not known already.
 
 ```{r}
 do.call("mean", args = list(x = c(1:13), trim = 0))
 ```
-
+Another use is to pass long arguments or arguments with size that are still undefined when doing the call.
+```{r}
+M <- matrix(1:4,2,2)
+M_to_bind <- list(M1=M, M2=M, M3=M)
+do.call("rbind", args = M_to_bind)
+```
 ## Creating functions
 
 Functions can be defined with statements like follow. Here, the function `addition` have `x` and `y` as arguments, with `y = 1` the default option (if no `y` is provided).
@@ -525,15 +530,13 @@ addition(x = x, y = y)
 addition(x = x)
 ```
 
-Note that the scope of all variables in the function definition is restricted to the function environment (i.e. local), unless specified otherwise. The value of `new_variable` is returned and assigned to the variable specified in calling environment (here `z`). Here `x` remain unchanged in the
+Note that the scope of all variables in the function definition is restricted to the function environment (i.e. local), unless specified otherwise. The value of `new_variable` is returned and assigned to the variable specified in calling environment (here `z`). The variable `x` remain unchanged where the function was called, and the `new_variable` doesn't exist.
 
 ```{r}
 #| error: true
 x
 new_variable
 ```
-
-This property of functions (called encapsulation) ensure it can be used within different programs without the risk of inadvertently overwrite existing variables. Functions also minimize code repetition, improve readability and maintainability and is more suitable for documentation and testing. You should use it!
 
 While defining function, one can also specify default values and pass additional arguments using `...`. In the following example, we create a function to return directly the value of identified in `grepl`. The `...` here correspond to values to be passed (if needed) to `grepl`.
 
@@ -555,7 +558,6 @@ In this situation, we could have directly included `ignore.case` as an argument 
 Functions can be defined in the header of the file to be used, but it is more manageable to define only one function per file. To load your function, the best solution (not covered here) would be to regroup them into a package and load it using `library`. A simpler alternative is to run the file using the function `source` to load it in your global environment (the one you are typing). If all functions are in the same folder, it is easy to iteratively source them all.
 
 # Conditional and iterative statements
-
 ## If-else
 
 Conditional statement take as an argument in parenthesis a vector of length 1 that is either `TRUE` or`FALSE` (not `NA`) and execute the code in `{}` if `TRUE`. If `FALSE`, the `else if` (there can be several ones) and `else` statements are checked in order if defined (they are optional) until one of the condition is met.
