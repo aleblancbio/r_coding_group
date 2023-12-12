@@ -3,7 +3,7 @@ title-block-banner: true
 title: "R basics"
 subtitle: "Coding group meeting #2"
 abstract: > 
-  Cover some important part of base R with an emphasis on programming aspects. 
+  Cover some important part of base R with an emphasis on programming aspects, while providing some context to new R users.
 author: "Alexandre Leblanc"
 date: 2023-12-12
 format: html
@@ -12,29 +12,29 @@ toc-location: left
 toc-depth: 2
 number-sections: true
 number-depth: 2
-
+self-contained: true
 editor: visual
 ---
 
 # General
-
 Some general notes and tips about R and RStudio:
 
--   You can use `#` to comment a line
+-   The `#` can be used to comment a line
 -   Case always matter in R
 -   Semi-columns are not needed (but they can be used to replace return in code)
 -   The number of spaces doesn't impact code, but you should indent your code properly
--   In RStudio, cutting and pasting code will indent it automatically
--   In RStudio, you can press ctrl-enter in a R script to run one line at a time into the console
--   In general, everything is ran in memory, you must save your data as .RData using the function `save` if you want to keep it, or export it in another file format (more on reading/saving files in subsequent coding group meeting).
--   You can use `View` on `data.frame` (tables) to inspect and manually filter data
--   Using a RStudio project, you can benefit of the relative paths to the folder. Definitions of functions are conventionally stored under a sub folder named `R` (its path would therefore be simply referred as `./R`).
+-   In RStudio, cut and paste code in the editor pane to indent it automatically
+-   In RStudio, press Ctrl-Enter in a R script (deitor pane) to run one line at a time into the console
+-   In general, everything is ran in memory, data must be saved as `.RData` file using the function `save` to keep it; exporting to other file format is also possible (more on reading/writing data in subsequent coding group meeting).
+-   The size of elements for a variable (e.g. the max number of character) is not specified by the user
+-   Use the `View` on `data.frame` (tables) to inspect and manually filter data
+-   RStudio projects benefit from the relative paths to the project folder. Definitions of functions are conventionally stored under a sub folder named `R` (its path would therefore be simply referred as `./R`).
 
 # Data types
 
 ## Atomic vectors and basic data types
 
-To create a vector assign one value to a variable using either `=` or `<-` (no `;` is required). Assigning will store the value without printing it to the console, you can always examine its content into the console by calling the variable name.
+To create a vector, assign a value to a variable using either `=` or `<-` (no `;` is required). Assigning will store the value without printing it to the console, you can always examine its content into the console by calling the variable name.
 
 ```{r}
 x = 1
@@ -42,13 +42,13 @@ x <- 1
 x
 ```
 
-The use of the function `c` allow to define multiple element into the vector.
+The use of the function `c` allows to define multiple elements into the vector.
 
 ```{r}
 z <- c(3,4,5)
 ```
 
-Vectors (even with multiple elements) can only have one type, which is determined upon entering the values. The atomic (basic) data types are: `logical`, `integer`, `double`, `character`. Atomic types also encompass `complex` and `raw` but they are less commonly used. Character values can be defined using ' or ". Integer values can be specified with a `L` after the number if required, otherwise they will be double.
+Vectors (even with multiple elements) can only have one type, which is determined upon entering the values. The atomic (basic) data types are: `logical`, `integer`, `double`, `character`. Atomic types also encompass `complex` and `raw` but they are less commonly used. Character values can be defined using ' or ". Integer values can be specified with a `L` after the number if required, otherwise they would be double.
 
 ```{r}
 x_logical <- TRUE
@@ -62,12 +62,14 @@ x_character <- "some string"
 The atomic types can be identified through the function `typeof`, but the function `class` function is more commonly used as it extend to higher structures than vectors. The class `numeric` encompass both `integer` and `double`, although the class `integer` also exist. The class of a variable can be tested using either `is` or the specific variants such as `is.numeric` or `is.integer`.
 
 ```{r}
+#A double
 x <- 1
 typeof(x)
 class(x)
 is.numeric(x)
 is.integer(x)
 
+#An integer
 y <- 1L
 typeof(y)
 class(y)
@@ -96,10 +98,9 @@ as.integer(b2)    #Lost of a digit
 ```
 
 ## Other common base classes
-
 #### Factors
 
-The class `factors` represent categorical variables with possibles levels attached as attribute. They are useful in statistical analysis and plotting to consider categories that are missing in the data as well as manipulate their order. They can be created using the functions `factor` or `as.factor`, their levels are shown on console, but can be accessed using the function `levels`.
+The class `factors` represent categorical variables with possibles levels attached as attribute. They are useful in statistical analysis and plotting to consider categories that are missing in the data as well as manipulate their order. They can be created using the functions `factor` or `as.factor`, their levels can be accessed using the function `levels`.
 
 ```{r}
 #Simple use
@@ -117,11 +118,9 @@ levels(y)
 
 ```
 
-Some basic functions convert by default `character` to `factor`, which is unwanted when manipulating strings (more on this later).
-
 #### Date and datetime
 
-Datetime classes (`POSIXlt`/`POSIXct`) can be use to represent time (they differ in the way information is stored, but you don't need to worry about distinguishing them). Datetime can be created from `character` using `strptime` function. Looking at help of the function would inform on possible format to read, datetime is also associated to a timezone `tz`.
+Datetime classes (`POSIXlt`/`POSIXct`) can be use to represent time (they differ in the way information is stored, but you don't need to worry about distinguishing them). Datetime can be created from `character` using the `strptime` function. Looking at help of the function would inform on possible format to read, datetime classes are also associated to a timezone `tz`.
 
 ```{r}
 x <- c("12/24/23 23:59:59")
@@ -130,7 +129,7 @@ y
 class(y)
 ```
 
-The `Date` class can also be used if needed and is defined a similar way from `character`.
+The `Date` class can also be used if needed and is defined in a similar way from `character`.
 
 ```{r}
 x <- c("12/24/23")
@@ -152,7 +151,7 @@ y
 class(y)
 ```
 
-Although the variable is of class matrix, the class of its content is the one of the original vector, and this class must be unique (e.g. elements are all either `logical`, `integer`, `numeric`, `character`). For example, here we examine the class of the elements in the first column (more on selection later).
+Although the variable is of class `matrix`, the class of its content is the one of the original vector, and this class must be unique (e.g. elements are all either `logical`, `integer`, `numeric`, `character`). For example, here we examine the class of the elements in the first column (more on selection later).
 
 ```{r}
 class(y[,1]) 
@@ -160,7 +159,7 @@ class(y[,1])
 
 ## Data.frame
 
-The class `data.frame` are tables with designated row and column dimension like matrices, but the class of columns (not rows) can differ.
+The class `data.frame` correspond to tables with designated row and column dimension like matrices, the class of columns (not rows) can however differ.
 
 ```{r}
 x <- c(1,2,3,4,5,6)
@@ -179,7 +178,7 @@ df <- data.frame(x = x, y = y , stringAsFactors = FALSE)
 
 ## List
 
-The class `list` allows to store vector of different size, as well as other classes than vectors, including `list` itself.
+The class `list` allows to store vectors of differents sizes, as well as other classes than vectors including `list` itself.
 
 ```{r}
 x <- c(1,2,3)
@@ -196,7 +195,7 @@ class(some_list$df)
 
 #### Vector
 
-There are different way of reading or changing an element of vectors, matrix, data.frame, list. For vector, we can specify the element number using `\[`. It can be used to read as well as to rewrite the element.
+There are different ways of reading or changing an element of vectors, `matrix`, `data.frame` and `list`. For vectors, we can specify the element number using `\[`. It can be used to read as well as to rewrite the element.
 
 ```{r}
 x <- c(1,2,3)
@@ -206,7 +205,7 @@ y <- x[2]
 y
 ```
 
-Alternatively, one can provide a logical vector of the same size as the original vector for selection.
+Alternatively, one can provide a logical vector of the same size as the original vector with `TRUE` elements being selected.
 
 ```{r}
 x <- c(1,2,3)
@@ -219,7 +218,7 @@ y
 
 #### Matrix
 
-For `matrix`, we can select using `\[`, but its non intuitive. We can alternatively specify rows and columns into `\[,\]`. Not specifying anything in one of the index would return the whole row or column
+For `matrix`, the `\[` can also be used but it's non intuitive. We can alternatively specify rows and columns into `\[,\]`. Not specifying anything in one of the index would return the whole row or column
 
 ```{r}
 x <- c(1,2,3,4,5,6)
@@ -230,7 +229,7 @@ y[1,2]
 y[,c(2,3)]
 ```
 
-Note than if the selection reduce the matrix to one dimension, it will reduce automatically to a vector (which might or might not be desirable). To prevent this, one can specify drop = FALSE as an argument.
+Note that if the selection reduce the `matrix` to one dimension, the variable would reduce automatically to a vector (which might be desirable or not). To prevent this, one can specify `drop = FALSE` as an argument.
 
 ```{r}
 x <- c(1,2,3,4,5,6)
@@ -241,7 +240,8 @@ y[,3]
 y[,3,drop = FALSE]
 ```
 
-####Data.frame For `data.frame`, we can specify rows and columns using `\[,\]` and also use the `drop = FALSE` argument. We can also extract columns using `\$` or `\[\[ \]\]` and then select element in the vector if needed. Column name can be used instead of position and is the only option for `\$`.
+#### Data.frame 
+For `data.frame`, rows and columns selection can be specified with `\[,\]`, using the `drop = FALSE` argument if required. Columns can also be extracted using `\$` or `\[\[ \]\]`, selection of rows is done directly on the vector. Column names can be used instead of position and is the only option for `\$`.
 
 ```{r}
 x <- c(1,2,3)
@@ -256,7 +256,7 @@ df$x[2]
 
 #### List
 
-For `list`, we can use either `\$` or `\[\[ \]\]` as with `data.frame` to extract an element. Using only `\[\]` would keep only the element selected but would preserve it as a `list`.
+For `list`, we can use either `\$` or `\[\[ \]\]` as with `data.frame` to extract an element. Using `\[\]` would select the element but preserve it as a `list`.
 
 ```{r}
 x <- c(1,2,3)
@@ -269,7 +269,7 @@ some_list <- list()
 
 #### Names, column and row names
 
-One can also access names (to read or redefine) of `list` and vector using names and names of rows and columns of `data.frame` and `matrix` using `colnames` and `rownames`.
+Names of `list` and vector can be accessed using the function `names` and names of rows and columns of `data.frame` and `matrix` using `colnames` and `rownames`.
 
 ```{r}
 x <- c(1,2,3,4,5,6)
@@ -283,7 +283,7 @@ names(x) <- y
 
 #### Dimension and length
 
-Matrix and data.frame number of rows and columns can be obtain using the function dim, while the length of vectors and list can be accessed using the function `length`.
+Both `Matrix` and `data.frame` number of rows and columns can be obtain using the function `dim` (also see `nrow`, `ncol`), while the length of vectors and `list` can be accessed using the function `length`.
 
 ```{r}
 x <- c(1,2,3,4,5,6)
@@ -294,7 +294,7 @@ df <- data.frame(x = x, y = y)
 dim(df)
 ```
 
-Note that objects can have a defined class but be of length or dimension 0. For atomic vectors, they can be defined using `vector` to initialize a vector of length 0, or function such as `character(0)`. Both empty `matrix` and `data.frame` can be created by referring to empty vectors. Empty list can be defined using the function `list` with no argument.
+Note that objects can have a defined class and a length or dimension of 0. For atomic vectors, they can be defined using `vector` or function such as `character(0)`. Both empty `matrix` and `data.frame` can be created by referring to empty vectors. Empty `list` can be defined using the function `list` with no argument.
 
 ```{r}
 x <- vector(mode = "numeric", length = 0)
@@ -304,7 +304,7 @@ df <- data.frame(x=x,y=y)
 empty_list <- list()
 ```
 
-Another zero length object of interest is `NULL` (which can be tested with `is.null`). It is often use in functions with undefined value to return (the purpose of the function involve other actions).
+Another zero length object of interest is `NULL` (which can be tested with `is.null`). It is often use inside functions to return undefined value (the purpose of the function involve other actions).
 
 # Useful functions
 
@@ -312,7 +312,7 @@ Another zero length object of interest is `NULL` (which can be tested with `is.n
 
 #### Missing value
 
-Missing values are designated by NA and exist for the different classes. Missing elements can be identified using `is.na` function.
+Missing values are designated by `NA` and exist for the different classes. Missing elements can be identified using `is.na` function.
 
 ```{r}
 x <- c(1, 2, NA)
@@ -324,7 +324,7 @@ is.na(y)
 
 #### NaN and infinity
 
-Some specific values may also be encountered for numeric variables, such as: `NaN` (not a number, i.e. not properly defined), `Inf` and `-Inf`. The class is `numeric` but the individual values can be identified using `is.infinite` or is `is.nan`.
+Some specific values may also be encountered for numeric variables, such as: `NaN` (not a number, i.e. not properly defined), `Inf` and `-Inf`. Such values can be identified using `is.infinite` or is `is.nan`.
 
 ```{r}
 x <- c(-1,0,1)/0
@@ -344,7 +344,7 @@ any(logical_x)  #Check if all elements are TRUE
 all(logical_x)  #Check if any element is TRUE
 ```
 
-One should be careful with `NA` as their behavior with `TRUE` or `FALSE` because, although being coherent, they make their identification more difficult (and are required in `if` statements). For one element, you can use `isTRUE` or `isFALSE` instead, otherwise `is.na` must be used to exclude `NA` cases.
+One should be careful with logical `NA` because their behavior with `TRUE` or `FALSE`, although being coherent,  make their identification more difficult (it is a common problem in `if` statements). For one element, you can use `isTRUE` or `isFALSE` instead, otherwise `is.na` must be used to exclude `NA` cases.
 
 ```{R}
 x <- c(TRUE,FALSE,NA)
@@ -369,16 +369,17 @@ x %in% y        #Equivalent to is.element
 which(x %in% y) #Convert logical to position that are TRUE
 
 match(x,y)      #Match the position of the first occurrence of y in x
-unique(y)       #Return unique values
-
 sort(y, decreasing = FALSE)  #Sort the values of the vector x
 y_index <- order(y)          #Identify the position that lead to a sorted vector
 y_index
 y[y_index]
 ```
+The function `unique` would return unique elements for a vector, but it can also be applied on `matrix` or `data.frame` to reduce them to the set of unique rows.
+```{R}
+unique(y)       #Return unique values
+```
 
 ## Binding
-
 In addition to the function `c` that bind vectors and `list` together, the function `rbind` and `cbind` allow binding rows and columns of `matrix` and `data.frame`.
 
 ```{R}
@@ -389,10 +390,8 @@ rbind(df1, df1)   #Must have the same column name
 ```
 
 ## Numeric vectors
-
 #### Sequences
-
-Typical function to create numeric vectors:
+Typical functions to create numeric vectors:
 
 ```{R}
 x <- rep(1, length.out = 10)                #Repeat a value in a vector of desired length
@@ -404,7 +403,6 @@ y <- seq_along(x)                           #Sequence with length corresponding 
 ```
 
 #### Classic mathematical operators and functions
-
 Basic mathematical operations, in addition to the typical `+`, `-`, `*`, `/`:
 
 ```{r}
@@ -422,15 +420,13 @@ log(x, base = exp(1))
 ```
 
 ####Probability functions Distributions and random generating functions:
-
 ```{r}
 sample(x = c("A","B","C"), size = 10, replace = TRUE) #Random sampling from set
-rnorm(n=10,mean=0,sd=1)         #Generate random values from normal distribution (also check runif, rpois, rbinom)
-pnorm(q = -3:3, mean=0, sd=1)   #Cumulative density distribution of normal distribution (also check dnorm, qnorm)
+rnorm(n=10,mean=0,sd=1)       #Random values from the normal distribution (also check runif, rpois, rbinom)
+pnorm(q = -3:3, mean=0, sd=1) #Cumulative density distribution of normal distribution (also check dnorm, qnorm)
 ```
 
 ## String manipulation
-
 The functions `grepl` and `gsub` allows pattern matching; they are useful but one should check a cheatsheet for possible expressions (e.g. \^ designate the start of a string, and \$ its end). The package `stringr` also provide (similar) functions on string operations.
 
 ```{R}
@@ -441,18 +437,17 @@ grepl(pattern = "A$", x)
 gsub(pattern = " ", replacement = "_", x = x)
 ```
 
-Functions to divide and concatenate strings are useful, in particular `paste0` The vectors `letters` and `LETTERS` contains the alphabet and are convenient to create generic strings.
+Functions to divide and concatenate strings are useful, in particular `paste0`. The vectors `letters` and `LETTERS` contains the alphabet and are convenient to create generic strings.
 
 ```{R}
 nchar(x)                         #Identify the number of characters
-substr(x,start=1,stop=5)         #Select a number of character
+substr(x,start=1,stop=5)         #Select a number of characters
 
 paste0(letters[1:3],LETTERS[1:3]) #Element-wise concatenate (see also paste)
 paste0(letters[1:3],LETTERS[1:3], collapse = "-") #Also concatenate the resulting string
 ```
 
 ## Operations on matrix
-
 ```{R}
 M <- matrix(c(1,2,-1,3),2,2)
 M
@@ -465,11 +460,12 @@ solve(M)         #Matrix inverse
 
 ```
 
+## Operations on data.frame
+There are a few functions to manipulate `data.frame` in base R, including: `subset`, `merge`, `aggregate` functions. However, the packages `dplyr` and `tidyr` from `tidyverse` (a group of packages) greatly facilitate working with `data.frame` (covered in another group meeting).
+
 # Function
-
 ## Packages: using existing functions
-
-Functions in R come in group as packages (usually built around a same thematic and well documented). Several packages come already with R (e.g. `base`, `utils`, `stats`) but others must be installed (once) using the `install.packages` function, or in RStudio, select Tools \> Install Packages. Every additional packages must then be loaded at the beginning of every session with the function`library`.
+Functions in R come in group as packages (usually built around a same thematic and well documented). Several packages come already with R (e.g. `base`, `utils`, `stats`) but others must be installed (once) using the `install.packages` function, or in RStudio, select Tools \> Install Packages. Every additional packages must then be loaded at the beginning of every session with the function `library`.
 
 ```{r}
 #| error: true
@@ -481,15 +477,14 @@ library("dplyr")
 
 Functions can be call from specific packages using the `::`operator. This is useful when two package might share the same function name, e.g. `plyr::summarise` and `dplyr::summarise`. It also make a function available with the need to load it first with `library`. Under RStudio, specifying the package and `::` will list possible functions associated to the package.
 
-To obtain help on a function, you can use the `?`symbol under RStudio (e.g. `?mean`). The example section is particularly useful to see the function in action.
+To obtain help on a function, you can use the `?` symbol in RStudio (e.g. `?mean`). The example section is particularly of interest to see the function in action.
 
 ```{r}
 ?mean
 ```
 
 ## Using functions
-
-When calling function, you can specify values to arguments based on position in the function, but it is safer to explicitly deine them with `=`; in the latter case, order of arguments would not impact the results. Also, the `<-` should not be used instead of `=` for specifying arguments; it would assigns a value outside the function call statement and specify its arguments based on position.
+When calling function, you can specify values to arguments based on position in the function, but it is safer to explicitly define them with `=`; in the latter case, order of arguments would not impact the results. Also, the `<-` should not be used instead of `=` for specifying arguments; it would assigns a value outside the function call statement and specify its arguments based on position.
 
 ```{r}
 x <- 1:3
@@ -512,9 +507,9 @@ M <- matrix(1:4,2,2)
 M_to_bind <- list(M1=M, M2=M, M3=M)
 do.call("rbind", args = M_to_bind)
 ```
-## Creating functions
 
-Functions can be defined with statements like follow. Here, the function `addition` have `x` and `y` as arguments, with `y = 1` the default option (if no `y` is provided).
+## Creating functions
+Functions can be defined with statements as follow. Here, the function `addition` have `x` and `y` as arguments, with `y = 1` the default option (used if no `y` is provided).
 
 ```{r}
 #Definition
@@ -530,7 +525,7 @@ addition(x = x, y = y)
 addition(x = x)
 ```
 
-Note that the scope of all variables in the function definition is restricted to the function environment (i.e. local), unless specified otherwise. The value of `new_variable` is returned and assigned to the variable specified in calling environment (here `z`). The variable `x` remain unchanged where the function was called, and the `new_variable` doesn't exist.
+Note that the scope of all variables in the function definition is restricted to the function environment (i.e. local), unless specified otherwise. The value of `new_variable` is returned and assigned to the variable specified in calling environment (here `z`). The variable `x` remains unchanged where the function was called, and the `new_variable` doesn't exist there either.
 
 ```{r}
 #| error: true
@@ -538,7 +533,7 @@ x
 new_variable
 ```
 
-While defining function, one can also specify default values and pass additional arguments using `...`. In the following example, we create a function to return directly the value of identified in `grepl`. The `...` here correspond to values to be passed (if needed) to `grepl`.
+While defining function, one can also pass additional arguments using `...`. In the following example, we create a function to return directly the value identified with `grepl`. The `...` here corresponds to values to be passed (if needed) to `grepl`.
 
 ```{r}
 #Definition
@@ -551,7 +546,7 @@ grep_value <- function(x, pattern, ...){
 grep_value(x = c("ABC", "BAC", "cab"), pattern = "AB", ignore.case = TRUE)
 ```
 
-In this situation, we could have directly included `ignore.case` as an argument of `grep_value`, but in some case functions are to be specified and their arguments are unknown.
+In this situation, we could have directly included `ignore.case` as an argument of `grep_value`; however, in some cases, functions are to be specified and their arguments are unknown.
 
 ## Loading function
 
@@ -560,7 +555,7 @@ Functions can be defined in the header of the file to be used, but it is more ma
 # Conditional and iterative statements
 ## If-else
 
-Conditional statement take as an argument in parenthesis a vector of length 1 that is either `TRUE` or`FALSE` (not `NA`) and execute the code in `{}` if `TRUE`. If `FALSE`, the `else if` (there can be several ones) and `else` statements are checked in order if defined (they are optional) until one of the condition is met.
+A conditional statement take, as an argument in parenthesis, a vector of length one that is either `TRUE` or`FALSE` (not `NA`) and execute the block of code in `{}` if `TRUE`. If `FALSE`, the `else if` (there can be several ones) and `else` statements are checked in order if defined (they are optional) until one of the condition is met.
 
 ```{r}
 #The statement
@@ -579,7 +574,7 @@ y
 
 ## For loop
 
-Repeating a block of code over a known number of iteration can be achieved using the `for` statement. The part in parenthesis specify that `i` must take values of `1` to `5`, and execute for each value (in order) the code in `{}`. It is a best practice to define a vector of results with proper length before the for loop and assign results rather than concatenating the answer at every step.
+Repeating a block of code over a known number of iteration can be achieved using the `for` statement. The part in parenthesis specify that `i` must take values of `1` to `5`, and execute for each value (in order) the code in `{}`. It is a best practice to define a vector of results with proper length before the `for` loop and assign results rather than concatenating the answer at every step.
 
 ```{r}
 #Definitions
@@ -587,7 +582,7 @@ x <- seq(0,50,10)
 y <- 1:5
 sum_xy <- vector("numeric",length = 5)
 
-#The for loop
+#The statement
 for (i in 1:5){             #seq_along would be better here
  sum_xy[i] <- x[i] + y[i]
 }
@@ -597,14 +592,16 @@ sum_xy
 ```
 
 ## While loop
-
-Similarly, for unknown number of iterations, the `while` statement would execute the block of code in `{}` as long as the condition in parenthesis is met when beginning the iteration.
+Similarly, for an unknown number of iterations, the `while` statement would execute the block of code in `{}` as long as the condition in parenthesis is met when beginning the iteration.
 
 ```{r}
+#Definitions
 x <- seq(0,50,10)
 y <- 1:5
 sum_xy <- vector("numeric",length = 5)
 i <- 1
+
+#The statement
 while (i <= 5) {
  sum_xy[i] <- x[i] + y[i]
  i <- i + 1
@@ -613,3 +610,13 @@ while (i <= 5) {
 #The result
 sum_xy
 ```
+
+## Apply
+The function `apply` (also see variants `sapply`, `tapply`, `mapply`) allows to iterate the call of a function on rows or columns of a `matrix` (or `data.frame`). They are convenience functions with `for` loop hidden. Application on `data.frame` are also covered with `tidyr` and `dplyr` from `tidyverse`.
+```{r}
+M <- matrix(1:8,2,4)
+M
+apply(X = M, MARGIN = 2, FUN = "sum")
+```
+
+
